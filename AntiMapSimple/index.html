@@ -1,0 +1,288 @@
+<html>
+<head>
+<title>AntiMap Simple: HTML5/ProcessingJS demo</title>      
+
+<script type="text/javascript" src="processing-1.3.6.js"></script>
+    
+<script type="text/processing" data-processing-target="targetcanvas">
+      
+	// default sizes/colors
+	int sw = 950;
+	int sh = 570;
+	int CANVAS_WIDTH = 950;//1900;//950;//1900;//1140;//1900;
+	int CANVAS_HEIGHT = 570;//1140;//570;//1140;
+	int BG_COLOR = 230;//320;
+	
+	// data - 
+	String dataPath = "040811_1153_30.csv";//""sample2-mtn.csv";//"2011_06_26_1320_47_snowplanet.csv";// "sample2-mtn.csv";// ";//"2011_06_25_1527_17_roundblock.csv";////2011_06_25_1527_17_roundblock.csv";//"
+	String []loadedData;
+	Plotted[] plotted; //
+	int entries = 0;
+	int count = 0;
+	float speed = 15; // playback speed multipler 1= real time
+	
+	// geo coords - screen coords
+	// dynamic limits for coordinates (starting at opposite ends)
+	float lowestX = -90.0f, highestX = 90.0f;
+	float lowestY = 180.0f, highestY = -180.0f;
+	float mappedX = 0.0f, mappedY = 0.0f;
+	float prevMappedX = 0.0f, prevMappedY = 0.0f;
+	float minDistance = 1;
+	
+	float transX = 0;
+	float transY = 0;
+	float transEasing = 0.04;
+	
+	// drawing
+	PGraphics pg;
+	PFont font;
+	
+	void setup()
+	{
+	  size(sw, sh);
+	  frameRate(30);
+	
+	  // setup offscreen buffer
+	  pg = createGraphics(CANVAS_WIDTH, CANVAS_HEIGHT, P2D);
+	  pg.beginDraw();
+	  pg.noStroke();
+	  pg.fill(BG_COLOR);//, 127);
+	  pg.rect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+	  pg.endDraw();
+	
+	
+	  // font = loadFont("Arial"); //loadFont("Courier New");
+	  font = createFont("Arial", 11); //createFont("Courier New",14);
+	  textFont(font, 11); 
+	
+	  // load some data
+	  processAntiMapData("data/" + dataPath);
+	}
+	
+	void draw() 
+	{
+	  background(BG_COLOR);
+	
+	  for (int i = 0; i < speed; i++)
+	  {
+		if (count < entries && count > 0)
+		{
+		  Plotted plot = plotted[count];
+		  Plotted prevPlot = plotted[count-1];
+	
+		  // draw only if distance between plots is large enough, avoids overlaps
+		  float distance = dist(plot.posX, plot.posY, prevPlot.posX, prevPlot.posY);  
+		  //variableEllipse(int(mappedX), int(mappedY), int(prevMappedX), int(prevMappedY));
+		  if (distance > minDistance)
+		  {
+			// map the colors spectrum to the rotation value
+			int rotationColor = int(map(plot.dir, 0, 360, 0, 255));
+	
+			// use the speed to determin size of circle (note: not normalised)
+			int speedSize = int(plot.speed); //* 2);
+	
+			// screen positions
+			int destX = int(plot.posX);
+			int destY = int(plot.posY);
+	
+			// draw a circle
+			drawPlot(destX, destY, rotationColor, speedSize);
+		  }
+		}
+		count = (count < entries) ? count + 1 : entries -1;
+	  }
+	
+	  image(pg, 0, 0);
+	
+	  // draw some text
+	  fill(0);
+	  text("--------------------------------------", 15, 20);
+	  //text("FPS: " + int(frameRate), 15, 40);
+	  text("DATA: " + dataPath, 15, 35);
+	  text("--------------------------------------", 15, 50);
+	  if (count > 0)
+	  {
+		text("Latitude: " + plotted[count-1].latitude, 15, 65);
+		text("Longitude: " + plotted[count-1].longitude, 15, 80);
+		text("Compass: " + plotted[count-1].dir, 15, 95);
+		text("Speed (kph): " + plotted[count-1].speed, 15, 110);
+		text("Distance (km): " + plotted[count-1].km, 15, 125);
+		text("Location tag/POI: " + plotted[count-1].tag, 15, 140); // not implemented into visualisation, would only flicker on anyway
+		text("Time (millis): " + plotted[count-1].time, 15, 155);
+	  }
+	  //println(frameRate);
+	  text("--------------------------------------", 15, 170);
+	  text("CLICK TO RESTART", 15, 185);
+	}
+	
+	// when mouse is clicked, restart by resetting the counter and clear the offscreen buffer
+	void mouseClicked() 
+	{
+	  pg.beginDraw();
+	  pg.noStroke();
+	  pg.fill(BG_COLOR);//, 127);
+	  pg.rect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+	  pg.endDraw();
+	
+	  count = 0;
+	}
+	
+	
+	
+	void drawPlot(int x, int y, int brightVal, int sizeVal) 
+	{
+	  //float speed = abs(x-px) + abs(y-py);
+	  pg.beginDraw();
+	  //pg.smooth();
+	  pg.fill(brightVal);//, 127);
+	  pg.stroke(0);//, 180 );
+	  //pg.fill(255, 255, 255);
+	  //pg.line(px, py, x, y);
+	  pg.ellipse(x, y, sizeVal, sizeVal);
+	  pg.endDraw();
+	}
+	
+	
+	
+	// method to process the antimap csv file using instances of the Plotted class
+	void processAntiMapData(String amDataFile)
+	{
+	  loadedData = loadStrings(amDataFile);
+	  entries = loadedData.length;
+	  plotted = new Plotted[entries];
+	  //println("Number of entries: " + entries); 
+	
+	  /* FIRST PASS - instantiate plots and work out limits for stage size */
+	  for (int i = 0; i < entries; i++)
+	  {
+		String[] segments = split(loadedData[i], ',');
+	
+		float lat = float(segments[0]);
+		float lng = float(segments[1]);
+		float dir = float(segments[2]);
+		float speed = float(segments[3]);
+		float km = float(segments[4]);
+		float time = float(segments[5]);//0;//float(segments[5])
+	
+		// try catch for optional poi/tags here.
+		String tag;// = segments[4];
+		try { 
+		  tag = segments[6];
+		}
+		catch(Throwable t) { 
+		  tag = "";
+		}
+	
+		// instantiate with all data (just converting text file arrays to a more descriptive class)
+		plotted[i] = new Plotted(lat, lng, dir, speed, km, time, tag);
+	
+		// update the limits
+		if (lat > lowestX) lowestX = lat;
+		if (lng < lowestY) lowestY = lng; // swap to -90,90
+		if (lat < highestX) highestX = lat;
+		if (lng > highestY) highestY = lng; //swap to -90,90
+	  }
+	
+	
+	  /* SECOND PASS screen positions are mapped using the limits (avoids doing this on the fly with the draw) */
+	
+	  // normalise the maximum and minum ranges to compare
+	  float normLatMIN = map(lowestX, 90, -90, 0, 1);
+	  float normLatMAX = map(highestX, 90, -90, 0, 1);
+	  float normLongMIN = map(lowestY, -180, 180, 0, 1);
+	  float normLongMAX = map(highestY, -180, 180, 0, 1);
+	  float latRange = normLatMAX - normLatMIN; // height
+	  float longRange = normLongMAX - normLongMIN; // width
+	
+	  // these are the starting positions for the rectangle area
+	  float xOffset = 0.0f;
+	  float yOffset = 0.0f;
+	  float normLat = 1.0f;
+	  float normLong = 1.0f;
+	  if (latRange > longRange)
+	  {
+		//println("scale to height!");
+		normLong = longRange / latRange;
+	
+		// the max width wont reach all the way cause were scaling to the full height instead
+		float maxScreenX = map(highestY, lowestY, highestY, 0, CANVAS_WIDTH * normLong);
+		xOffset = (CANVAS_WIDTH - maxScreenX) * .5;
+	  }
+	  else
+	  {
+		//println("scale to width!");
+		normLat = latRange / longRange;
+	
+		float maxScreenY = map(highestX, lowestX, highestX, 0, CANVAS_HEIGHT * normLat);
+		yOffset = (CANVAS_HEIGHT - maxScreenY) * .5;
+	  }
+	
+	  //println("norm lat: " + normLat + ", norm long: " + normLong);
+	
+	  for (int i = 0; i < entries; i++)
+	  {
+		plotted[i].posY = yOffset + map(plotted[i].latitude, lowestX, highestX, 0, CANVAS_HEIGHT * normLat); //sw
+		plotted[i].posX = xOffset + map(plotted[i].longitude, lowestY, highestY, 0, CANVAS_WIDTH * normLong); //sh
+	  }
+	
+	  count = 0;
+	}
+	
+	
+	
+	// helper class to hold the loaded text file data
+	class Plotted {
+	
+	  float latitude; // -180 to 180
+	  float longitude; // -180 to 180
+	  PVector screenPos;
+	  float posX; // mapped screen position X
+	  float posY; // mapped screen position Y
+	  float dir = 0; // compass direction 0-360
+	  float km = 0; // distance in kms
+	  float time = 0;
+	  float speed = 0;
+	  int cmin = 0;
+	  int csec = 0;
+	  String tag = ""; // tagged location label
+	
+	  public Plotted(float lat, float lng, float d, float s, float k, float t, String l) {    
+		latitude = lat;
+		longitude = lng;
+		dir = d;
+		speed = s;
+		km = k;
+		time = t;
+		tag = l;
+	
+		// need to set screen positions...
+	  }
+	
+	  /*
+	  String getFormattedTime()
+	   {
+	   
+	   csec = int(time / 1000);
+	   cmin = int(csec / 60);
+	   csec = csec % 60;
+	   
+	   return nf(cmin,2) + ":" + nf(csec,2);// + ":" + nf(time,2);
+	   }
+	   */
+	}
+
+</script>
+    
+</head>
+<body>
+
+<pre></pre>
+
+<!-- external PDE (requires processing) -->
+<!--<canvas data-processing-sources="AntiMapSimple.pde" >-->
+
+<!-- inline -->
+<canvas id="targetcanvas"></canvas>
+
+</body>
+</html>
