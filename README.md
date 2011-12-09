@@ -1,6 +1,9 @@
 ## About##
 The AntiMap is an Open Source creative toolset for recording and visualising your own data. The project currently consists of a smart phone utility application (AntiMap Log) for data capture, and a couple of web/desktop applications (AntiMap Simple and AntiMap Video) for post analysis and data visualisation. In the coming months further applications, source code, and tutorials will be released in hope that users can learn from and find interesting ways to visualise data and use their technology.
 
+More information: [http://www.theantimap.com](http://theantimap.com)
+
+
 ## About AntiMap Log##
 AntiMap Log is a smart phone utility application for ‘recording’ your own data.
 
@@ -43,8 +46,5 @@ Includes:
 - Sample data from AntiMap Log mobile application- "DATA_SAMPLE.csv".
 - Sample video- "VIDEO_SAMPLE.mp4" (this is a compressed version of the original GoPro HD video which was 4 minutes long and 380mb, it is now 45 seconds and 10mb).
 
-Further installation/setup instructions to come.
-
-More information: [http://www.theantimap.com](http://theantimap.com)
 
 -Trent Brooks
