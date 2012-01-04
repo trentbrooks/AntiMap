@@ -38,7 +38,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.view.View;
-
+import java.util.Locale;
 
 // PROPERTIES
 /* ------------------------------------------------------ */
@@ -418,8 +418,27 @@ void updateTime()
 // for creating the filename in format DDMMYY_HHMM_SS, eg. 251211_1200_30
 String getTimeStamp()
 {
-  String theYear = nf(year(), 4).substring(2); // just get the last 2 digits of the year (2011 > 11)
-  return "" + nf(day(), 2) + nf(month(), 2) + theYear + "_" + nf(hour(), 2) + nf(minute(), 2) + "_" + nf(second(), 2);
+  String theYear = nfEng(year(), 4).substring(2); // just get the last 2 digits of the year (2011 > 11)
+  return "" + nfEng(day(), 2) + nfEng(month(), 2) + theYear + "_" + nfEng(hour(), 2) + nfEng(minute(), 2) + "_" + nfEng(second(), 2);
+}
+
+// nf number formatting doesn't work properly in europe. converting to Locale.ENGLISH
+// see http://docs.oracle.com/javase/tutorial/java/data/numberformat.html
+String nfEng(int val, int leftPlaces)
+{  
+  return String.format(Locale.ENGLISH, "%0" + leftPlaces + "d", val);
+}
+
+String nfEng(double val, int rightPlaces)
+{
+  //return String.format(Locale.ENGLISH, "%10." + rightPlaces + "f", val);
+  return String.format(Locale.ENGLISH, "%1." + rightPlaces + "f", val);
+}
+
+String nfEng(float val, int rightPlaces)
+{
+  //return String.format(Locale.ENGLISH, "%10." + rightPlaces + "f", val);
+  return String.format(Locale.ENGLISH, "%1." + rightPlaces + "f", val);
 }
 
 
@@ -448,7 +467,7 @@ void drawLabelStats()
   fill(0);
 
   // display the time to user a bit more readable than just millis (note millis are logged to csv, not this)
-  displayTime = nf(cmin, 2) + ":" + nf(csec, 2);
+  displayTime = nfEng(cmin, 2) + ":" + nfEng(csec, 2);
 
   // when in "record" mode display the stats and related text
   if (showInput)
@@ -637,8 +656,8 @@ class MyLocationListener implements LocationListener
     currentLongitude = location.getLongitude();
 
     // need to format to 6 decimal places (doubles add extra digits, floats get shit after 4-5 decimals)
-    currentLatitudeStr = nf((float)currentLatitude, 1, 6);
-    currentLongitudeStr = nf((float)currentLongitude, 1, 6);
+    currentLatitudeStr = nfEng(currentLatitude, 6);
+    currentLongitudeStr = nfEng(currentLongitude, 6);
 
     //println("1) " + (float)currentLatitude);
     //println("2) " + location.getLatitude());
@@ -656,7 +675,7 @@ class MyLocationListener implements LocationListener
       cumulativePhoneKms = cumulativeMs * 0.001;//nf(cumulativeMs * 1000, 1, 2);
 
       // format to 2 decimal places
-      cumulativePhoneKmsStr = nf(cumulativePhoneKms, 1, 2);
+      cumulativePhoneKmsStr = nfEng(cumulativePhoneKms, 2);
     }
     else
     {
@@ -672,7 +691,7 @@ class MyLocationListener implements LocationListener
       currentSpeed = (cs < 0) ? 0 : cs;
 
       // format to 2 decimal places
-      currentSpeedStr = nf(currentSpeed, 1, 2);
+      currentSpeedStr = nfEng(currentSpeed, 2);
     }
 
     prevLocation = location;
