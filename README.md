@@ -38,10 +38,13 @@ If you don't want to work with the inline processingjs code, switch the commente
 ## About AntiMap Video##
 AntiMap Video is a desktop application built in Openframeworks. It synchronises recorded data from the AntiMap Log mobile application with raw video footage (mov, avi, mp4, m4v). It was originally created as a snowboarding/skiing application to visualize real time rider data and stats similar to a video game. 
 
-AntiMap Video (version 0.1) is still an early prototype with plenty of kinks to work out before a 1.0 can be released. You can download the current working prototype application here (OSX only). Source code, and a windows version is not yet available but is definitely on the TODO list.
+AntiMap Video (version 0.2) is still an early prototype with plenty of kinks to work out before a 1.0 can be released. You can download the current working prototype application here (OSX only). Source code, and a windows version is not yet available but is definitely on the TODO list.
+
+####Updates:####
+AntiMap Video 0.2 now includes hi quality HD video exporting from the application. There is an issue when trying to use a h264 encoded mp4 video file and exporting, if this happens just convert your video to .mov or .avi before importing into the application.
 
 ####Download link:####
-[https://github.com/downloads/trentbrooks/AntiMap/AntiMapVideoApplication_01.zip](https://github.com/downloads/trentbrooks/AntiMap/AntiMapVideoApplication_01.zip)
+[https://github.com/downloads/trentbrooks/AntiMap/_AntiMapVideoApplication_02.zip](https://github.com/downloads/trentbrooks/AntiMap/_AntiMapVideoApplication_02.zip)
 
 ####Includes:####
  - Sample data from AntiMap Log mobile application- "DATA_SAMPLE.csv".
