@@ -12,6 +12,6 @@ AntiMap Log V2 is a work in progress. Currently added Core Motion framework to a
  - Add dropbox support ofxDropBox- https://github.com/trentbrooks/ofxDropBox
 
 ## Sample data screenshot##
- ![https://github.com/trentbrooks/AntiMap/AntiMapLog V2/raw/master/data-screenshot.png](https://github.com/trentbrooks/AntiMap/AntiMapLog V2/raw/master/data-screenshot.png)
+ ![https://raw.github.com/trentbrooks/AntiMap/master/AntiMapLog V2/data-screenshot.png](https://raw.github.com/trentbrooks/AntiMap/master/AntiMapLog V2/data-screenshot.png)
 
 -Trent Brooks
