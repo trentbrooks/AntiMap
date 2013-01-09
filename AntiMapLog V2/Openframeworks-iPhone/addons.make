@@ -1,0 +1,4 @@
+ofxOsc
+ofxXmlSettings
+ofxCoreMotion
+ofxTouchGUI

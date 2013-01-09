@@ -1,0 +1,26 @@
+<install>
+
+	<version>0.8</version>
+	<author>Mehmet Akten</author>
+	<url>www.msavisuals.com/msashape3d</url>
+	
+    <requires>
+	</requires>
+    
+	<add>	
+		<src>
+			<folder name="addons/MSAShape3D/src">			
+				<file>../../../addons/MSAShape3D/src/MSAShape3D.h</file>
+			</folder>
+		</src>
+
+		<include>
+			<path>../../../addons/MSAShape3D/src</path>
+		</include>
+		
+		<link>
+		</link>
+
+	</add>
+	
+</install>
