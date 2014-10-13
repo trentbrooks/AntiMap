@@ -1,5 +1,5 @@
 ## About##
-The AntiMap is an Open Source creative toolset for recording and visualising your own data. The project currently consists of a smart phone utility application (AntiMap Log) for data capture, and a couple of web/desktop applications (AntiMap Simple and AntiMap Video) for post analysis and data visualisation. In the coming months further applications, source code, and tutorials will be released in hope that users can learn from and find interesting ways to visualise data and use their technology.
+The AntiMap is an Open Source creative toolset for recording and visualising your own data. The project currently consists of a smart phone utility application (AntiMap Log) for data capture, and a couple of web/desktop applications (AntiMap Simple and AntiMap Video) for post analysis and data visualisation. 
 
 
 ## About AntiMap Log##
